@@ -1,6 +1,8 @@
 import React from 'react'
 import Note from './Note'
 
+import { getNotes } from '../service/Api'
+
 import './styles/NoteListStyle.css'
 
 class NoteList extends React.Component {
@@ -12,10 +14,14 @@ class NoteList extends React.Component {
   }
 
   componentDidMount () {
-    window.fetch('https://api.myidea.fr/v1/notes')
-      .then(response => response.json())
-      .then(result => this.setState({ notes: result }))
-      .catch(error => window.alert(error))
+    // this.update = setInterval(() => {
+      getNotes()
+      .then(data => this.setState({notes: data}))
+    // }, 1000)
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.update)
   }
 
   render () {
