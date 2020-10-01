@@ -71,20 +71,17 @@ export function deleteNote (noteId) {
 }
 
 export function updateNote (note) {
+    console.log(note)
     return new Promise((resolve, reject) => {
         if (note) {
             var noteId = note.id
             delete note.id
-
-            var body = {
-                title: note.title,
-                description: note.description
-            }
+            delete note.isOpen
 
             var params = {
                 ...globalParams,
                 method: 'PATCH',
-                body: JSON.stringify(body)
+                body: JSON.stringify(note)
             }
     
             fetch(URL + 'notes/' + noteId, params)

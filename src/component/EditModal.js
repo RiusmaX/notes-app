@@ -1,7 +1,19 @@
 import React from 'react'
 import ReactModal from 'react-modal'
 
-import { createNote, updateNote, getNotes } from '../service/Api'
+import './styles/EditModalStyle.css'
+
+import { createNote, updateNote } from '../service/Api'
+
+import {
+  Fab,
+  Modal,
+  Backdrop
+} from '@material-ui/core'
+
+import {
+  Add
+} from '@material-ui/icons'
 
 class EditModal extends React.Component {
   constructor(props) {
@@ -10,7 +22,7 @@ class EditModal extends React.Component {
         id: props.note ? props.note.id : null,
         title: props.note ? props.note.title : '',
         description: props.note ? props.note.description : '',
-        isOpen: props.isOpen
+        isOpen: undefined
     }
 
     ReactModal.setAppElement('body')
@@ -24,7 +36,6 @@ class EditModal extends React.Component {
 
   handleChange = (event) => {
     this.setState({
-        isOpen: true,
         [event.target.name]: event.target.value
     })
   }
@@ -34,17 +45,30 @@ class EditModal extends React.Component {
   }
 
   handleCloseModal = () => {
-      this.setState({isOpen: false})
+      this.setState({isOpen: undefined})
+      if (this.props.onCloseModal) {
+        this.props.onCloseModal()
+      }
   }
 
   handleSubmit = (event) => {
       event.preventDefault()
       if (this.props.updateMode) {
         updateNote(this.state)
-        .then(() => console.log('La note a été modifiée'))
+        .then(() => {
+          if (this.props.updateNotes) {
+            this.props.updateNotes()
+          }
+          this.handleCloseModal()
+        })
       } else {
         createNote(this.state)
-        .then(() => console.log('La note a été ajoutée'))
+        .then(() => {
+          if (this.props.updateNotes) {
+            this.props.updateNotes()
+          }
+          this.handleCloseModal()
+        })
       }
   }
 
@@ -53,19 +77,30 @@ class EditModal extends React.Component {
     const { updateMode } = this.props
     return (
         <div>
-            {!updateMode ? <button onClick={this.handleOpenModal}>OPEN MODAL</button> : null}
-            <ReactModal
-                isOpen={isOpen}  
+            {!updateMode ? <Fab style={{position: 'absolute', bottom: 20, right: 20}} onClick={this.handleOpenModal}><Add /></Fab> : null}
+            <Modal
+              open={isOpen || false}
+              onClose={this.handleCloseModal}
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              className='modal'
+              closeAfterTransition
+              BackdropComponent={Backdrop}
+              BackdropProps={{
+                timeout: 500,
+              }}
             >
-                <form onSubmit={this.handleSubmit}>
+            <div className='content'>
+                <button onClick={this.handleCloseModal} className="close-button">X</button>
+                <form onSubmit={this.handleSubmit} className="form">
                     <label>Titre : </label>
                     <input name='title' onChange={this.handleChange} value={title} />
                     <label>Description : </label>
                     <input name='description' onChange={this.handleChange} value={description} />
-                    <button type="submit">{updateMode ? 'MODIFIER' : 'AJOUTER'}</button>
+                    <button type="submit" className="submit-button">{updateMode ? 'MODIFIER' : 'AJOUTER'}</button>
                 </form> 
-                <button onClick={this.handleCloseModal}>CLOSE MODAL</button>
-            </ReactModal>
+              </div>
+            </Modal>
         </div>
     )
   }

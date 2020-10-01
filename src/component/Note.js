@@ -1,9 +1,19 @@
 import React from 'react'
-import Draggable from 'react-draggable'
+// import Draggable from 'react-draggable'
 import './styles/NoteStyle.css'
 
-import { deleteNote } from '../service/Api'
+import { deleteNote, updateNote } from '../service/Api'
 import EditModal from './EditModal'
+
+import {
+  Button
+} from '@material-ui/core'
+
+import {
+  Visibility,
+  VisibilityOff
+} from '@material-ui/icons'
+
 
 class Note extends React.Component {
   constructor () {
@@ -11,6 +21,7 @@ class Note extends React.Component {
     this.state = {
       openModal: false
     }
+    this.nodeRef = React.createRef();
   }
 
   getRandomColor () {
@@ -24,34 +35,64 @@ class Note extends React.Component {
 
   handleDelete = (noteId) => {
     deleteNote(noteId)
-    .then(() => console.log('La note a été supprimée'))
+    .then(() => {
+      if (this.props.updateNotes) {
+        this.props.updateNotes()
+      }
+    })
   }
 
-  handleUpdate = (note) => {
+  handleFavorite = (note) => {
+    note.isFavorite = !note.isFavorite
+    updateNote(note)
+    .then(() => {
+      if (this.props.updateNotes) {
+        this.props.updateNotes()
+      }
+    })
+  }
+
+  handleArchive = (note) => {
+    note.isEnabled = !note.isEnabled
+    updateNote(note)
+    .then(() => {
+      if (this.props.updateNotes) {
+        this.props.updateNotes()
+      }
+    })
+  }
+
+  handleUpdate = () => {
     this.setState({openModal: true})
   }
 
+  handleCloseModal = () => {
+    this.setState({openModal: undefined})
+  }
+
   render () {
-    const { note } = this.props
+    const { note, updateNotes } = this.props
     return (
       note
         ? (
-          <Draggable>
-            <div className='note'>
+          // <Draggable nodeRef={this.nodeRef}>
+            <div className='note' style={{backgroundColor: note.isEnabled ? 'gold' : 'lightgray'}} noderef={this.nodeRef}>
               <div className='row'>
-                <span className='title'>
-                  <h2>{note.title}</h2>
-                </span>
-                <button onClick={() => this.handleDelete(note.id)}>🗑️</button>
-                <button onClick={() => this.handleUpdate(note)}>✏️</button>
+                <Button onClick={() => this.handleDelete(note.id)}><span role="img" aria-label="delete">🗑️</span></Button>
+                <Button onClick={() => this.handleFavorite(note)}><span role="img" aria-label="delete">{note.isFavorite ? '❤️' : '♡'}</span></Button>
+                <Button onClick={() => this.handleUpdate(note)}><span role="img" aria-label="edit">✏️</span></Button>
               </div>
+              <span className='title'>
+                <h2>{note.title}</h2>
+              </span>
               <div className='separator' />
               <span className='description'>
                 {note.description}
               </span>
-              <EditModal updateMode isOpen={this.state.openModal} note={note}/>
+              <Button onClick={() => this.handleArchive(note)}><span role="img" aria-label="edit">{note.isEnabled ? <VisibilityOff /> : <Visibility />}</span></Button>
+              <EditModal updateMode isOpen={this.state.openModal} note={note} updateNotes={updateNotes} onCloseModal={this.handleCloseModal} />
             </div>
-          </Draggable>
+          // </Draggable>
         )
         : 'NO DATA'
     )
