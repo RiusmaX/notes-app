@@ -6,6 +6,13 @@ import { deleteNote } from '../service/Api'
 import EditModal from './EditModal'
 
 class Note extends React.Component {
+  constructor () {
+    super()
+    this.state = {
+      openModal: false
+    }
+  }
+
   getRandomColor () {
     var letters = '0123456789ABCDEF'
     var color = '#'
@@ -21,9 +28,8 @@ class Note extends React.Component {
   }
 
   handleUpdate = (note) => {
-
+    this.setState({openModal: true})
   }
-  
 
   render () {
     const { note } = this.props
@@ -43,7 +49,7 @@ class Note extends React.Component {
               <span className='description'>
                 {note.description}
               </span>
-              <EditModal update />
+              <EditModal updateMode isOpen={this.state.openModal} note={note}/>
             </div>
           </Draggable>
         )
