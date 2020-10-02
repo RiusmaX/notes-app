@@ -6,6 +6,7 @@ import AboutContainer from './container/AboutContainer'
 import ContactContainer from './container/ContactContainer'
 import AuthContainer from './container/AuthContainer'
 import LoginContainer from './container/LoginContainer'
+import ProfileContainer from './container/ProfileContainer'
 
 import {
   BrowserRouter as Router,
@@ -41,10 +42,16 @@ function App () {
               <li>
                 <Link to="/login">Login</Link>
               </li>
+              <li>
+                <Link to="/profile">Profile</Link>
+              </li>
             </ul>
           </nav>
       
           <Switch>
+            <Route path="/profile">
+              <ProfileContainer />
+            </Route>
             <Route path="/login">
               <LoginContainer />
             </Route>

@@ -1,3 +1,5 @@
+import jwt_decode from "jwt-decode"
+
 const URL = "https://api.myidea.fr/v1/"
 
 const globalParams = {
@@ -5,6 +7,51 @@ const globalParams = {
     headers: {
       'Content-Type': 'application/json; charset=UTF-8'
     },
+}
+
+/*
+* Une promesse a 3 statuts : Pending, Resolved (Fullfilled) et Rejected
+*/
+
+export function getProfile () {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+            const decoded = jwt_decode(token)
+    
+            console.log(decoded)
+
+            // test de l'expiration du token 
+            if (decoded.exp >= new Date().getMilliseconds()) {
+                console.log('TOKEN VALIDE')
+            } else {
+                console.log('TOKEN INVALIDE')
+            }
+
+            const userId = decoded.sub
+    
+            var params = {
+                ...globalParams, // Annotation d'inclusion
+                method: 'GET',
+                headers: {
+                    ...globalParams.headers,
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+
+            console.log(params)
+    
+            fetch(URL + 'users/' + userId, params)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result)
+                resolve(result)
+            })
+        } else {
+            console.error('NO TOKEN')
+        }
+
+    })
 }
 
 export function login (credentials) {
