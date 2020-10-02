@@ -4,6 +4,8 @@ import './App.css'
 import RootContainer from './container/RootContainer'
 import AboutContainer from './container/AboutContainer'
 import ContactContainer from './container/ContactContainer'
+import AuthContainer from './container/AuthContainer'
+import LoginContainer from './container/LoginContainer'
 
 import {
   BrowserRouter as Router,
@@ -33,10 +35,22 @@ function App () {
               <li>
                 <Link to="/contact">Contact</Link>
               </li>
+              <li>
+                <Link to="/authentification">Register</Link>
+              </li>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
             </ul>
           </nav>
       
           <Switch>
+            <Route path="/login">
+              <LoginContainer />
+            </Route>
+            <Route path="/authentification">
+              <AuthContainer />
+            </Route>
             <Route path="/about">
               <AboutContainer />
             </Route>

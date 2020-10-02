@@ -7,6 +7,68 @@ const globalParams = {
     },
 }
 
+export function login (credentials) {
+    return new Promise((resolve, reject) => {
+        if (credentials.email && credentials.password) {
+            var body = {
+                email: credentials.email,
+                password: credentials.password
+            }
+
+            var params = {
+                ...globalParams, // Annotation d'inclusion
+                method: 'POST',
+                body: JSON.stringify(body)
+            }
+
+            fetch(URL + 'auth/login', params)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                if (response && 
+                    response.tokens && 
+                    response.tokens.access && 
+                    response.tokens.access.token) {
+                        console.log(response.tokens.access.token)
+                        localStorage.setItem('token', response.tokens.access.token)
+                        resolve(response)
+                    }
+            })
+
+        } else {
+            reject('Informations manquantes')
+        }
+    })
+}
+
+export function register (user) {
+    return new Promise((resolve, reject) => {
+        if (user.username && user.email && user.password) {
+            var body = {
+                name: user.username,
+                password: user.password,
+                email: user.email
+            }
+    
+            var params = {
+                ...globalParams, // Annotation d'inclusion
+                method: 'POST',
+                body: JSON.stringify(body)
+              }
+    
+            fetch(URL + 'auth/register', params)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                resolve(response)
+            })
+            .catch(error => reject(error))
+        } else {
+            reject('Informations manquantes')
+        }
+    })
+}
+
 export function getNotes () {
     return new Promise((resolve, reject) => {
         window.fetch(URL + 'notes')

@@ -9,7 +9,7 @@ class AboutContainer extends React.Component {
   }
 
   render() {
-    return <p>{this.state.someKey}</p>;
+    return <p>ABOUT</p>;
   }
 
   componentDidMount() {
