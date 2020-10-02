@@ -18,8 +18,6 @@ export function getProfile () {
         const token = localStorage.getItem('token')
         if (token) {
             const decoded = jwt_decode(token)
-    
-            console.log(decoded)
 
             // test de l'expiration du token 
             if (decoded.exp >= new Date().getMilliseconds()) {
@@ -38,8 +36,6 @@ export function getProfile () {
                     'Authorization': 'Bearer ' + token
                 }
             }
-
-            console.log(params)
     
             fetch(URL + 'users/' + userId, params)
             .then(response => response.json())
@@ -49,6 +45,7 @@ export function getProfile () {
             })
         } else {
             console.error('NO TOKEN')
+            reject('NO TOKEN')
         }
 
     })
